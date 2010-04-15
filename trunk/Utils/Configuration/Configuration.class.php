@@ -10,7 +10,7 @@
 
 require_once 'ConfigurationExceptions.classSet.php';
 require_once 'Saver.aclass.php';
-require_once 'Loader.aclass.php';
+require_once 'XMLLoader.class.php';
 
 
 class Utils_Configuration
@@ -153,7 +153,6 @@ class Utils_Configuration
 
 	/**
 	 * Wymus zapisanie aktualnych ustawien
-	 * // TODO
 	 * */
 	public function save(Utils_Configuration_Saver $obj)
 	{
@@ -162,11 +161,24 @@ class Utils_Configuration
 
 
 	/**
-	 * Wymus zapisanie aktualnych ustawien
-	 * // TODO
+	 * Wymus zapisanie odczytanie ustawien
+	 *
+	 * @param Utils_Configuration_Loader $obj - objekt z ktorego odczytuje sie
+	 * 		nowe ustawienia
+	 * @param bool $override - czy ustawienia maja zostac nadpisane, czy dodac
+	 * 		do juz istniejacych
+	 * 		* UWAGA: Dublowane klucze zostaną nadpisane przez nowe ustawienia
 	 * */
-	public function load(Utils_Configuration_Loader $obj)
+	public function load( Utils_Configuration_Loader $obj, $override = false )
 	{
-		$this->obj->save($this->aFields);
+		$config = $this->obj->load();
+		if ($override)
+		{
+			$this->aFields = $config;
+		}
+		else
+		{
+			$this->aFields = array_merge($this->aFields, $config);
+		}
 	}
 }
