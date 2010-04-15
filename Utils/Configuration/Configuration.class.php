@@ -24,6 +24,7 @@ class Utils_Configuration
 		unset($this->bAutoSave);
 	}
 
+
 	/**
 	 * Zapisuj za kazdym razem kiedy zostanie zmienione jakies pole
 	 *
@@ -54,6 +55,7 @@ class Utils_Configuration
 	{
 		return (false == $override && isset($this->aFields[$field]));
 	}
+
 
 	/**
 	 * Dodaj nowe pole
@@ -90,6 +92,7 @@ class Utils_Configuration
 		return (isset($this->aFields[$field]));
 	}
 
+
 	/**
 	 * pobierz wartosc pola
 	 *
@@ -120,16 +123,19 @@ class Utils_Configuration
 
 	/**
 	 * Usun konkretne pole
+	 *
+	 * @param string $field
+	 *
+	 * @throw Utils_Configuration_NoFieldException
 	 * */
 	public function del( $field )
 	{
 		if ( !$this->exists($field))
 		{
-			Utils_Configuration_NoFieldException($field);
+			Utils_Configuration_NoFieldException::raise($field);
 		}
 
 		unset($this->aFields[$field]);
-		return true;
 	}
 
 
@@ -142,7 +148,8 @@ class Utils_Configuration
 		$this->obj->save($this->aFields);
 	}
 
-		/**
+
+	/**
 	 * Wymus zapisanie aktualnych ustawien
 	 * // TODO
 	 * */
