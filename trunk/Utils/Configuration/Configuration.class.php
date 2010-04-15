@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * Klasa pozwalajaca na trzymanie i zarzadzanie konfiguracja aplikacji PHP
+ *
+ * @autor: Paryk yarpo Jar <jar dot patryk at gmail dot com>
+ * @data: 15-04-2010
+ * @last-mod: 15-04-2010
+ * */
+
+require_once 'ConfigurationExceptions.classSet.php';
+require_once 'Saver.aclass.php';
+require_once 'Loader.aclass.php';
+
 
 class Utils_Configuration
 {
@@ -125,82 +137,17 @@ class Utils_Configuration
 	 * Wymus zapisanie aktualnych ustawien
 	 * // TODO
 	 * */
-	public function save(Utils_Configuration_Save $obj)
+	public function save(Utils_Configuration_Saver $obj)
 	{
 		$this->obj->save($this->aFields);
 	}
-}
 
-abstract class Utils_Configuration_Save
-{
-	abstract public function save($array);
-}
-
-class Utils_ConfigurationException extends Exception {}
-class Utils_ConfigurationExpectedException extends Utils_ConfigurationException
-{
-	const EXPECTED_EXCEPTION_MESSAGE =
-		'Spodziewano sie %s jako argumentu. Otrzymano %s.';
-	
-	static protected function expectedExceptionMsg($expected, $got)
+		/**
+	 * Wymus zapisanie aktualnych ustawien
+	 * // TODO
+	 * */
+	public function load(Utils_Configuration_Loader $obj)
 	{
-		return sprintf(self::EXPECTED_EXCEPTION_MESSAGE, $expected, $got);
-	}
-}
-
-class Utils_Configuration_NoFieldException extends Utils_ConfigurationException
-{
-	const EXCEPTION_MSG = 'Pole %s nie istenieje.';
-
-	static private function createMessage($field)
-	{
-		return sprintf(self::EXCEPTION_MSG, $field);
-	}
-}
-
-class Utils_Configuration_IllegalOverrideException
-	extends	Utils_ConfigurationException
-{
-	const EXCEPTION_MSG = 'Pole %s juz istenieje. Nie mozna go nadpisac';
-
-	static private function createMessage($field)
-	{
-		return sprintf(self::EXCEPTION_MSG, $field);
-	}
-
-	static public function raise($field)
-	{
-		throw new self(self::createMessage($field));
-	}
-}
-
-class Utils_Configuration_UnknownConfigurationSourceException
-	extends	Utils_ConfigurationException{}
-
-class Utils_Configuration_ExpectedBoolException
-	extends Utils_ConfigurationExpectedException
-{
-	static public function is($data)
-	{
-		if ( !is_bool($data))
-		{
-			throw new self(
-				self::expectedExceptionMsg('boolean', gettype($data))
-			);
-		}
-	}
-}
-
-class Utils_Configuration_ExpectedStringException
-	extends Utils_ConfigurationExpectedException
-{
-	static public function is($data)
-	{
-		if ( !is_string($data))
-		{
-			throw new self(
-				self::expectedExceptionMsg('string', gettype($data))
-			);
-		}
+		$this->obj->save($this->aFields);
 	}
 }
