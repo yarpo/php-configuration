@@ -15,9 +15,21 @@ require_once 'Loader.aclass.php';
 
 class Utils_Configuration
 {
+	/**
+	 * Przechowuje 'pole' : wartosc
+	 * */
 	protected $aFields = array();
+
+
+	/**
+	 * Sprawdza, czy nalezy za kazdym razem zapisywac
+	 * */
 	protected $bAutoSave = false;
 
+
+	/**
+	 * Czysci pamiec
+	 * */
 	public function __destruct()
 	{
 		unset($this->aFields);
