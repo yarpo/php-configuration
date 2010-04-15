@@ -6,9 +6,6 @@ class Utils_Configuration
 	protected $aFields = array();
 	protected $bAutoSave = false;
 
-	const EXPECTED_EXCEPTION_MESSAGE =
-		'Spodziewano sie %s jako argumentu. Otrzymano %s.';
-
 	public function __destruct()
 	{
 		unset($this->aFields);
@@ -16,56 +13,19 @@ class Utils_Configuration
 	}
 
 	/**
-	 * Pozwala zaladowac ustawienia z dowolnego zrodla
-	 *
-	 * @param string $src - odpowiednio spreparowany string pozwalajacy na utworzenie
-	 * 		instancji odpowiedniej klasy
-	 *
-	 * @throw Utils_Configuration_UnknownConfigurationSourceException - jesli
-	 * 		podane zrodlo nie da sie odpowiednio zinterpretowac
-	 *
-	 * @return Utils_Configuration $config
-	 * 
-	public load( $src )
-	{
-		$src_type = self::getSrcType($src);
-
-		switch($src_type)
-		{
-			case self::XML :
-				return new Utils_Configuration_XML($src);
-			break;
-
-			default:
-				throw
-					new Utils_Configuration_UnknownConfigurationSourceException(
-						'Nieznane zodlo konfiguracji ' . $src);
-			break;
-		}
-
-		return null;
-	}
-	*/
-
-	private function expectedExceptionMsg($expected, $got)
-	{
-		return sprintf(self::EXPECTED_EXCEPTION_MESSAGE, $expected, $got);
-	}
-
-
-	/**
 	 * Zapisuj za kazdym razem kiedy zostanie zmienione jakies pole
+	 *
+	 * @param bool $auto - wartosc na jaka zmienic
+	 *
+	 * @throw Utils_Configuration_ExpectedBoolException
+	 *
+	 * @return bool;
 	 * */
 	public function autoSave( $auto = true )
 	{
-		if ( !is_bool($auto))
-		{
-			throw new Utils_Configuration_ExpectedBoolException(
-				self::expectedExceptionMsg('boolean', gettype($auto))
-			);
-		}
-		$this->bAutoSave = $auto;
+		Utils_Configuration_ExpectedBoolException::is($auto);
 
+		$this->bAutoSave = $auto;
 		return $this->bAutoSave;
 	}
 
@@ -92,19 +52,11 @@ class Utils_Configuration
 	 * */
 	public function add( $field, $value, $override = false )
 	{
-		if ( !is_string($field))
-		{
-			throw new Utils_Configuration_ExpectedStringException(
-				self::expectedExceptionMsg('string', gettype( $field ))
-			);
-		}
+		Utils_Configuration_ExpectedStringException::is($field);
 
 		if ($this->overrideLocked($override, $field))
 		{
-			throw new Utils_Configuration_IllegalOverrideException(
-				'Pole ' . $field . ' juz istenieje. Nie mozna go nadpisac'
-			);
-			return;
+			Utils_Configuration_IllegalOverrideException::raise($field);
 		}
 
 		$this->aFields[$field] = $value;
@@ -121,13 +73,7 @@ class Utils_Configuration
 	 * */
 	public function exists( $field )
 	{
-		if ( !is_string($field))
-		{
-			throw new Utils_Configuration_ExpectedStringException(
-				self::expectedExceptionMsg('string', gettype( $field ))
-			);
-			return false;
-		}
+		Utils_Configuration_ExpectedStringException::is($field);
 
 		return (isset($this->aFields[$field]));
 	}
@@ -143,9 +89,7 @@ class Utils_Configuration
 	{
 		if ( !$this->exists($field))
 		{
-			throw new Utils_Configuration_NoFieldException(
-				'Nie ma pola ' . $field
-			);
+			Utils_Configuration_NoFieldException::raise($field);
 		}
 
 		return $this->aFields[$field];
@@ -169,10 +113,7 @@ class Utils_Configuration
 	{
 		if ( !$this->exists($field))
 		{
-			throw new Utils_Configuration_NoFieldException(
-				'Nie ma pola ' . $field
-			);
-			return false;
+			Utils_Configuration_NoFieldException($field);
 		}
 
 		unset($this->aFields[$field]);
@@ -182,14 +123,84 @@ class Utils_Configuration
 
 	/**
 	 * Wymus zapisanie aktualnych ustawien
+	 * // TODO
 	 * */
-	public function save()
+	public function save(Utils_Configuration_Save $obj)
 	{
-		//$this->obj->save($this->aFields);
+		$this->obj->save($this->aFields);
 	}
 }
 
+abstract class Utils_Configuration_Save
+{
+	abstract public function save($array);
+}
+
 class Utils_ConfigurationException extends Exception {}
+class Utils_ConfigurationExpectedException extends Utils_ConfigurationException
+{
+	const EXPECTED_EXCEPTION_MESSAGE =
+		'Spodziewano sie %s jako argumentu. Otrzymano %s.';
+	
+	static protected function expectedExceptionMsg($expected, $got)
+	{
+		return sprintf(self::EXPECTED_EXCEPTION_MESSAGE, $expected, $got);
+	}
+}
+
+class Utils_Configuration_NoFieldException extends Utils_ConfigurationException
+{
+	const EXCEPTION_MSG = 'Pole %s nie istenieje.';
+
+	static private function createMessage($field)
+	{
+		return sprintf(self::EXCEPTION_MSG, $field);
+	}
+}
+
+class Utils_Configuration_IllegalOverrideException
+	extends	Utils_ConfigurationException
+{
+	const EXCEPTION_MSG = 'Pole %s juz istenieje. Nie mozna go nadpisac';
+
+	static private function createMessage($field)
+	{
+		return sprintf(self::EXCEPTION_MSG, $field);
+	}
+
+	static public function raise($field)
+	{
+		throw new self(self::createMessage($field));
+	}
+}
+
 class Utils_Configuration_UnknownConfigurationSourceException
-	extends	Utils_ConfigurationException {}
-class Utils_Configuration_ExpectedBoolException extends Utils_ConfigurationException {}
+	extends	Utils_ConfigurationException{}
+
+class Utils_Configuration_ExpectedBoolException
+	extends Utils_ConfigurationExpectedException
+{
+	static public function is($data)
+	{
+		if ( !is_bool($data))
+		{
+			throw new self(
+				self::expectedExceptionMsg('boolean', gettype($data))
+			);
+		}
+	}
+}
+
+class Utils_Configuration_ExpectedStringException
+	extends Utils_ConfigurationExpectedException
+{
+	static public function is($data)
+	{
+		if ( !is_string($data))
+		{
+			throw new self(
+				self::expectedExceptionMsg('string', gettype($data))
+			);
+		}
+	}
+}
