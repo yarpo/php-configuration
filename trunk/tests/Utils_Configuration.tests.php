@@ -90,7 +90,92 @@ class Configuration_test extends UnitTestCase {
 	}
 
 
-	
+
+	function test_add_NoStringParam_throwUtils_Configuration_ExpectedStringException()
+	{
+		try
+		{
+			$this->oConfig->add(true, "a");
+		}
+		catch(Utils_Configuration_ExpectedStringException $e)
+		{
+			$this->passed();
+			return;
+		}
+
+		$this->fail();
+	}
+
+
+
+	function test_add_DoubleField_ThrowUtils_Configuration_IllegalOverrideException()
+	{
+		try
+		{
+			$this->oConfig->add("jeden", "a");
+		}
+		catch(Exception $e)
+		{
+			$this->fail("Ustawianie pierwszej wartosci");
+			return;
+		}
+
+		try
+		{
+			$this->oConfig->add("jeden", 12);
+		}
+		catch(Utils_Configuration_IllegalOverrideException $e)
+		{
+			$this->passed();
+		}
+
+
+		try
+		{
+			$this->oConfig->add("jeden", 12, false);
+		}
+		catch(Utils_Configuration_IllegalOverrideException $e)
+		{
+			$this->passed();
+			return;
+		}
+		
+		$this->fail("test_add_DoubleField_ThrowUtils_Configuration_IllegalOverrideException");
+	}
+
+
+
+	function test_add_DoubleField_NoException()
+	{
+		try
+		{
+			$this->oConfig->add("jeden", "a");
+			$this->oConfig->add("jeden", "b", true);
+		}
+		catch(Exception $e)
+		{
+			$this->fail("test_add_DoubleField_NoException");
+			return;
+		}
+
+		$this->passed();
+	}
+
+
+
+	function test_exists_returnTrue()
+	{
+		$this->oConfig->add("jeden", "a");
+		$result = $this->oConfig->exists("jeden");
+		$this->assertTrue($result);
+	}
+
+
+	function test_exists_returnFalse()
+	{
+		$result = $this->oConfig->exists("jeden");
+		$this->assertFalse($result);
+	}
 }
 
 function debug($a) {
