@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * testy klasy pozwalajaca na trzymanie i zarzadzanie konfiguracja aplikacji PHP
+ *
+ * @autor: Paryk yarpo Jar <jar dot patryk at gmail dot com>
+ * @data: 15-04-2010
+ * @last-mod: 15-04-2010
+ * */
+
 ini_set( 'display_errors', 'On' ); 
 error_reporting( E_ALL ^ E_DEPRECATED  );
 
