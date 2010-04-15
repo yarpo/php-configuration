@@ -9,6 +9,11 @@ class Utils_Configuration
 	const EXPECTED_EXCEPTION_MESSAGE =
 		'Spodziewano sie %s jako argumentu. Otrzymano %s.';
 
+	public function __destruct()
+	{
+		unset($this->aFields);
+		unset($this->bAutoSave);
+	}
 
 	/**
 	 * Pozwala zaladowac ustawienia z dowolnego zrodla
@@ -44,7 +49,7 @@ class Utils_Configuration
 
 	private function expectedExceptionMsg($expected, $got)
 	{
-		return sprinf(self::EXPECTED_EXCEPTION_MESSAGE, $expected, $got);
+		return sprintf(self::EXPECTED_EXCEPTION_MESSAGE, $expected, $got);
 	}
 
 
