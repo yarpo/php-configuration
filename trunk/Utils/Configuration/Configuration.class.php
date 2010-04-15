@@ -42,7 +42,7 @@ class Utils_Configuration
 	}
 	*/
 
-	private expectedExceptionMsg($expected, $got)
+	private function expectedExceptionMsg($expected, $got)
 	{
 		return sprinf(self::EXPECTED_EXCEPTION_MESSAGE, $expected, $got);
 	}
@@ -51,7 +51,7 @@ class Utils_Configuration
 	/**
 	 * Zapisuj za kazdym razem kiedy zostanie zmienione jakies pole
 	 * */
-	public autoSave( $auto = true )
+	public function autoSave( $auto = true )
 	{
 		if ( !is_bool($auto))
 		{
@@ -73,7 +73,7 @@ class Utils_Configuration
 	 *
 	 * @return bool
 	 * */
-	private overrideLocked($override, $field)
+	private function overrideLocked($override, $field)
 	{
 		return (false == $override && isset($this->aFields[$field]));
 	}
@@ -85,7 +85,7 @@ class Utils_Configuration
 	 * @param mixed $value - wartosc pola
 	 * @param bool override = false - czy nadpisac, jesli juz istanieje
 	 * */
-	public add( $field, $value, $override = false )
+	public function add( $field, $value, $override = false )
 	{
 		if ( !is_string($field))
 		{
@@ -114,7 +114,7 @@ class Utils_Configuration
 	 * @throw Utils_Configuration_ExpectedStringException - gdy przekazano
 	 * 		co innego niz string
 	 * */
-	public exists( $field )
+	public function exists( $field )
 	{
 		if ( !is_string($field))
 		{
@@ -124,7 +124,7 @@ class Utils_Configuration
 			return false;
 		}
 
-		return (!isset($this->aFields[$field]));
+		return (isset($this->aFields[$field]));
 	}
 
 	/**
@@ -134,23 +134,23 @@ class Utils_Configuration
 	 *
 	 * @return mixed
 	 * */
-	public get( $field )
+	public function get( $field )
 	{
-		if ( !$this->exists([$field]))
+		if ( !$this->exists($field))
 		{
 			throw new Utils_Configuration_NoFieldException(
 				'Nie ma pola ' . $field
 			);
 		}
 
-		return $this->aFields[$field]);
+		return $this->aFields[$field];
 	}
 
 
 	/**
 	 * Wyczysc cala konfiguracje
 	 * */
-	public clear()
+	public function clear()
 	{
 		unset($this->aFields);
 		$this->aFields = array();
@@ -160,9 +160,9 @@ class Utils_Configuration
 	/**
 	 * Usun konkretne pole
 	 * */
-	public del( $field )
+	public function del( $field )
 	{
-		if ( !$this->exists([$field]))
+		if ( !$this->exists($field))
 		{
 			throw new Utils_Configuration_NoFieldException(
 				'Nie ma pola ' . $field
@@ -170,7 +170,7 @@ class Utils_Configuration
 			return false;
 		}
 
-		unset($this->aFields[$field]));
+		unset($this->aFields[$field]);
 		return true;
 	}
 
@@ -178,13 +178,13 @@ class Utils_Configuration
 	/**
 	 * Wymus zapisanie aktualnych ustawien
 	 * */
-	public save()
+	public function save()
 	{
 		//$this->obj->save($this->aFields);
 	}
 }
 
-class Utils_Configuration extends Exception {}
+class Utils_ConfigurationException extends Exception {}
 class Utils_Configuration_UnknownConfigurationSourceException
-	extends	Utils_Configuration {}
-class Utils_Configuration_ExpectedBoolException extends Utils_Configuration {}
+	extends	Utils_ConfigurationException {}
+class Utils_Configuration_ExpectedBoolException extends Utils_ConfigurationException {}
