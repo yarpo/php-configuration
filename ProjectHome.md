@@ -1,0 +1,1 @@
+Zestaw klas do obsługi konfiguracji aplikacji napisanych w PHP
